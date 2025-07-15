@@ -1,13 +1,14 @@
 {
-  "name": "vk-proxy",
+  "name": "matrp-vk-bot",
   "version": "1.0.0",
+  "description": "Парсер сообщений форума MatRP и пересылка их в VK",
   "main": "index.js",
-  "type": "module",
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
-    "express": "^4.19.2",
-    "node-fetch": "^3.4.1"
+    "axios": "^1.6.7",
+    "cheerio": "^1.0.0-rc.12",
+    "dotenv": "^16.4.5"
   }
 }
