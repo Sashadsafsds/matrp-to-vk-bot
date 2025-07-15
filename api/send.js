@@ -1,17 +1,30 @@
 export default async function handler(req, res) {
-  const { peer_id, message, token } = req.body;
-
-  if (!peer_id || !message || !token) {
-    return res.status(400).json({ error: 'Missing peer_id, message or token' });
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const vkUrl = `https://api.vk.com/method/messages.send?peer_id=${peer_id}&message=${encodeURIComponent(message)}&random_id=${Date.now()}&access_token=${token}&v=5.199`;
+  const { user_id, token, message } = req.body;
+
+  if (!user_id || !token || !message) {
+    return res.status(400).json({ error: 'Missing fields' });
+  }
 
   try {
-    const response = await fetch(vkUrl);
+    const response = await fetch(`https://api.vk.com/method/messages.send`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        user_id,
+        access_token: token,
+        message,
+        v: '5.131',
+        random_id: Date.now().toString()
+      }),
+    });
+
     const data = await response.json();
     res.status(200).json(data);
-  } catch (error) {
-    res.status(500).json({ error: 'VK API error', details: error.message });
+  } catch (err) {
+    res.status(500).json({ error: 'VK request failed', details: err.message });
   }
 }
