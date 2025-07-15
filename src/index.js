@@ -17,13 +17,20 @@ async function fetchLastPost() {
       'Cookie': COOKIE,
       'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36'
     },
-    maxRedirects: 0, // 🔐 Чтобы отловить редирект вручную
-    validateStatus: status => status >= 200 && status < 400 // ⚠️ Не считать 302 ошибкой
+    maxRedirects: 0,
+    validateStatus: status => status >= 200 && status < 400
   });
 
-  // 📦 Проверка на редирект
+  // ⛔ Явный редирект на логин
   if (res.status === 302 && res.headers.location?.includes('/login')) {
-    throw new Error('Получен редирект — возможно, не авторизован');
+    throw new Error('❌ Получен редирект на /login — куки истекли или недействительны');
+  }
+
+  // ⚠ Проверка: страница доступна, но в ней нет сообщений (возможно, заглушка "Вход / Регистрация")
+  if (!res.data.includes('class="message"')) {
+    console.warn('⚠ Страница не содержит сообщений. Возможна потеря авторизации.');
+    console.log('🔍 Фрагмент страницы:\n' + res.data.slice(0, 300));
+    throw new Error('⚠ Не удалось найти сообщения. Возможно, куки просрочены.');
   }
 
   const $ = cheerio.load(res.data);
@@ -32,6 +39,10 @@ async function fetchLastPost() {
 
   const text = last.find('.bbWrapper').text().trim();
   const id = last.attr('data-message-id') || last.attr('id');
+
+  if (!text || !id) {
+    throw new Error('⚠️ Не удалось извлечь сообщение или ID');
+  }
 
   console.log('🧵 Последнее сообщение найдено:');
   console.log('🔹 ID:', id);
@@ -61,11 +72,7 @@ async function sendToVK(message) {
 (async () => {
   try {
     const { text, id } = await fetchLastPost();
-    if (text && id) {
-      await sendToVK(text);
-    } else {
-      console.log('⚠️ Не удалось извлечь сообщение или ID');
-    }
+    await sendToVK(text);
   } catch (err) {
     console.error('❌ Общая ошибка:', err.message);
   }
