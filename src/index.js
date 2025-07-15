@@ -1,5 +1,5 @@
 import axios from 'axios';
-import cheerio from 'cheerio';
+import * as cheerio from 'cheerio';
 
 const VK_TOKEN = process.env.VK_TOKEN;
 const VK_USER_ID = process.env.VK_USER_ID;
