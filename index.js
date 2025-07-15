@@ -2,15 +2,24 @@ const express = require('express');
 const app = express();
 const axios = require('axios');
 
+// Middleware для JSON
 app.use(express.json());
 
-// 🔥 Разрешаем CORS всем (для Tampermonkey)
+// 🔧 CORS + обработка preflight
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*"); // 👈 Разрешаем все источники
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+
+  // Обработка preflight запроса
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+
   next();
 });
 
+// 📬 Обработка POST-запроса
 app.post('/send', async (req, res) => {
   const { user_id, message } = req.body;
 
