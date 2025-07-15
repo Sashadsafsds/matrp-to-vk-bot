@@ -1,45 +1,46 @@
-const express = require('express');
-const app = express();
-const axios = require('axios');
+require("dotenv").config();
+const axios = require("axios");
+const cheerio = require("cheerio");
 
-// Middleware для JSON
-app.use(express.json());
+const THREAD_URL = process.env.THREAD_URL;
+const VK_TOKEN = process.env.VK_TOKEN;
+const USER_ID = process.env.VK_USER_ID;
+let lastId = null;
 
-// 🔧 CORS + обработка preflight
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-
-  // Обработка preflight запроса
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(200);
-  }
-
-  next();
-});
-
-// 📬 Обработка POST-запроса
-app.post('/send', async (req, res) => {
-  const { user_id, message } = req.body;
-
+async function checkNewMessages() {
   try {
-    const result = await axios.post(`https://api.vk.com/method/messages.send`, null, {
+    const res = await axios.get(THREAD_URL);
+    const $ = cheerio.load(res.data);
+    const posts = $("article.message").toArray();
+
+    if (posts.length === 0) return;
+
+    const lastPost = posts[posts.length - 1];
+    const postId = $(lastPost).attr("data-message-id") || $(lastPost).attr("id");
+
+    if (postId === lastId) return;
+
+    const text = $(lastPost).find(".bbWrapper").text().trim();
+    if (!text || text.length < 2) return;
+
+    lastId = postId;
+
+    await axios.post(`https://api.vk.com/method/messages.send`, null, {
       params: {
-        access_token: "vk1.a.F3Zjpr-ACP9y4IGgB718zAUCTQUci4jeRkw04gctIKdOSD_406C7BJh7w1qzKGT6junxgDnni3yg2prsgXr_ANuVnWwOwNikTg3fEyRLYnFt-85i62uEw8mWxLLOfQpyOH3x5hmW8imKVIeWl1cJWOGW7LmlsJoSXQRJuMKLUsh8kQObgJc1asHNhrtscv7w3s53UzCk0PWr19jz2j42yQ",
-        v: "5.199",
         random_id: Date.now(),
-        user_id,
-        message
+        user_id: USER_ID,
+        message: text,
+        access_token: VK_TOKEN,
+        v: "5.199"
       }
     });
 
-    res.json(result.data);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+    console.log("✅ Новое сообщение отправлено в VK:", text);
 
-app.listen(10000, () => {
-  console.log("VK proxy running on port 10000");
-});
+  } catch (err) {
+    console.error("❌ Ошибка:", err.message);
+  }
+}
+
+setInterval(checkNewMessages, 10000); // каждые 10 сек
+console.log("🤖 МатРП → VK бот запущен");
