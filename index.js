@@ -4,7 +4,7 @@ const PORT = process.env.PORT || 10000;
 
 app.use(express.json());
 
-const VK_TOKEN = 'vk1.a.F3Zjpr-ACP9y4IGgB718zAUCTQUci4jeRkw04gctIKdOSD_406C7BJh7w1qzKGT6junxgDnni3yg2prsgXr_ANuVnWwOwNikTg3fEyRLYnFt-85i62uEw8mWxLLOfQpyOH3x5hmW8imKVIeWl1cJWOGW7LmlsJoSXQRJuMKLUsh8kQObgJc1asHNhrtscv7w3s53UzCk0PWr19jz2j42yQ'; // <-- сюда твой токен
+const VK_TOKEN = 'vk1.a.F3Zjpr-ACP9y4IGgB718zAUCTQUci4jeRkw04gctIKdOSD_406C7BJh7w1qzKGT6junxgDnni3yg2prsgXr_ANuVnWwOwNikTg3fEyRLYnFt-85i62uEw8mWxLLOfQpyOH3x5hmW8imKVIeWl1cJWOGW7LmlsJoSXQRJuMKLUsh8kQObgJc1asHNhrtscv7w3s53UzCk0PWr19jz2j42yQ';
 const VK_API_URL = 'https://api.vk.com/method/messages.send';
 
 app.post('/send', async (req, res) => {
@@ -29,6 +29,10 @@ app.post('/send', async (req, res) => {
     } catch (error) {
         res.status(500).send('VK API Error');
     }
+});
+
+app.get('/', (req, res) => {
+    res.send('VK Proxy is running ✅');
 });
 
 app.listen(PORT, () => {
