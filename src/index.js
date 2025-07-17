@@ -7,7 +7,8 @@ const VK_TOKEN = 'vk1.a.F3Zjpr-ACP9y4IGgB718zAUCTQUci4jeRkw04gctIKdOSD_406C7BJh7
 const VK_USER_ID = '753569419';
 
 // 🍪 Актуальный Cookie
-const COOKIE = 'xf_push_notice_dismiss=1; _ym_uid=1745945902582005262; _ym_d=1745945902; xf_th_uix_widthToggle=fixed; xf_tfa_trust=dZG1eEhgcuDj2x6M0BvEOSAFhUCHKymT; xf_user=75463%2C-lZbVl1DR7rj9Bp8yCkjtNRQpQ_yT57zblV8W7SN; ajs_anonymous_id=%223a4bceb7-3c46-421b-ae51-2dc4a6be1cef%22; xf_th_uix_sidebarCollapsed=0; xf_csrf=2DRWxCMzfbMpchib; __lhash_=39c503d4f60fa61286e8c4e0c0b70909; xf_session=7WvHNFSL_HiPIxWBDtEU6UMoQCixXgY2; __hash_=1a6fc4d0fbc53deb0794ee4ee8b7b00f';
+const COOKIE = '
+xf_push_notice_dismiss=1; _ym_uid=1745945902582005262; _ym_d=1745945902; xf_th_uix_widthToggle=fixed; xf_tfa_trust=dZG1eEhgcuDj2x6M0BvEOSAFhUCHKymT; xf_user=75463%2C-lZbVl1DR7rj9Bp8yCkjtNRQpQ_yT57zblV8W7SN; ajs_anonymous_id=%223a4bceb7-3c46-421b-ae51-2dc4a6be1cef%22; xf_th_uix_sidebarCollapsed=0; __lhash_=39c503d4f60fa61286e8c4e0c0b70909; xf_csrf=js_BA8ZTNEaorP4A; __hash_=19130164d5af1e152796c32ee9f98ffe; xf_session=oxIwn81uzbt8A_oF0qr9lTk_UUa6puxV';
 
 async function fetchLastPost() {
   console.log('🌐 Загружаем тему:', THREAD_URL);
